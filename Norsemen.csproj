@@ -1,0 +1,83 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Norsemen</AssemblyName>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    <TargetFramework>net48</TargetFramework>
+  </PropertyGroup>
+  <PropertyGroup>
+    <LangVersion>14.0</LangVersion>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace />
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="Norsemen.assets.norsemen_bundle" />
+    <None Remove="Norsemen.Files.Equipment.yml" />
+    <None Remove="Norsemen.Files.Names.yml" />
+    <None Remove="Norsemen.Files.RandomTalks.yml" />
+    <None Remove="Norsemen.translations.English.yml" />
+    <None Remove="ILRepack.List" />
+    <EmbeddedResource Include="Norsemen.assets.norsemen_bundle" LogicalName="Norsemen.assets.norsemen_bundle" />
+    <EmbeddedResource Include="Norsemen.Files.Equipment.yml" LogicalName="Norsemen.Files.Equipment.yml" />
+    <EmbeddedResource Include="Norsemen.Files.Names.yml" LogicalName="Norsemen.Files.Names.yml" />
+    <EmbeddedResource Include="Norsemen.Files.RandomTalks.yml" LogicalName="Norsemen.Files.RandomTalks.yml" />
+    <EmbeddedResource Include="Norsemen.translations.English.yml" LogicalName="Norsemen.translations.English.yml" />
+    <EmbeddedResource Include="ILRepack.List" LogicalName="ILRepack.List" />
+  </ItemGroup>
+  <ItemGroup>
+	<Reference Include="UnityEngine.CoreModule">
+		<HintPath>C:\Program Files (x86)\Steam\steamapps\common\Valheim\valheim_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+	</Reference>
+	<Reference Include="BepInEx">
+		<HintPath>C:\Program Files (x86)\Steam\steamapps\common\Valheim\Old mods\BepInEx\core\BepInEx.dll</HintPath>
+	</Reference>
+	<Reference Include="assembly_guiutils">
+		<HintPath>C:\Program Files (x86)\Steam\steamapps\common\Valheim\valheim_Data\Managed\assembly_guiutils.dll</HintPath>
+	</Reference>
+    <Reference Include="System.Core" />
+    <Reference Include="YamlDotNet">
+      <HintPath>..\..\Program Files (x86)\Steam\steamapps\common\Valheim\Old mods\BepInEx\plugins\YamlDotNet.dll</HintPath>
+    </Reference>
+	<Reference Include="0Harmony">
+		<HintPath>C:\Program Files (x86)\Steam\steamapps\common\Valheim\Old mods\BepInEx\core\0Harmony.dll</HintPath>
+	</Reference>
+	<Reference Include="assembly_valheim">
+		<HintPath>C:\Program Files (x86)\Steam\steamapps\common\Valheim\valheim_Data\Managed\assembly_valheim.dll</HintPath>
+	</Reference>
+	<Reference Include="UnityEngine.PhysicsModule">
+		<HintPath>C:\Program Files (x86)\Steam\steamapps\common\Valheim\valheim_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
+	</Reference>
+	<Reference Include="assembly_utils">
+		<HintPath>C:\Program Files (x86)\Steam\steamapps\common\Valheim\valheim_Data\Managed\assembly_utils.dll</HintPath>
+	</Reference>
+	<Reference Include="UnityEngine.AnimationModule">
+		<HintPath>C:\Program Files (x86)\Steam\steamapps\common\Valheim\valheim_Data\Managed\UnityEngine.AnimationModule.dll</HintPath>
+	</Reference>
+	<Reference Include="UnityEngine.AssetBundleModule">
+		<HintPath>C:\Program Files (x86)\Steam\steamapps\common\Valheim\valheim_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
+	</Reference>
+	<Reference Include="Unity.TextMeshPro">
+		<HintPath>C:\Program Files (x86)\Steam\steamapps\common\Valheim\valheim_Data\Managed\Unity.TextMeshPro.dll</HintPath>
+	</Reference>
+	<Reference Include="gui_framework">
+		<HintPath>C:\Program Files (x86)\Steam\steamapps\common\Valheim\valheim_Data\Managed\gui_framework.dll</HintPath>
+	</Reference>
+	<Reference Include="UnityEngine.IMGUIModule">
+		<HintPath>C:\Program Files (x86)\Steam\steamapps\common\Valheim\valheim_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+	</Reference>
+	<Reference Include="UnityEngine.ParticleSystemModule">
+		<HintPath>C:\Program Files (x86)\Steam\steamapps\common\Valheim\valheim_Data\Managed\UnityEngine.ParticleSystemModule.dll</HintPath>
+	</Reference>
+	<Reference Include="UnityEngine.UI">
+		<HintPath>C:\Program Files (x86)\Steam\steamapps\common\Valheim\valheim_Data\Managed\UnityEngine.UI.dll</HintPath>
+	</Reference>
+	<Reference Include="UnityEngine.TextRenderingModule">
+		<HintPath>C:\Program Files (x86)\Steam\steamapps\common\Valheim\valheim_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
+	</Reference>
+	<Reference Include="UnityEngine">
+		<HintPath>C:\Program Files (x86)\Steam\steamapps\common\Valheim\valheim_Data\Managed\UnityEngine.dll</HintPath>
+	</Reference>
+  </ItemGroup>
+</Project>
