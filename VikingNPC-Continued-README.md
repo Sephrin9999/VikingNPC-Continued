@@ -1,5 +1,9 @@
 # VikingNPC Continued
 
+<p align="center">
+  <img src="assets/icon.png" alt="VikingNPC Continued" width="256">
+</p>
+
 Community-maintained continuation of **VikingNPC (Norsemen)**,
 originally created by **RustyMods**, updated for compatibility with
 **Valheim 1.0**.
