@@ -8,7 +8,7 @@ Community-maintained continuation of **VikingNPC (Norsemen)**,
 originally created by **RustyMods**, updated for compatibility with
 **Valheim 1.0**.
 
-**Current version:** 0.4.0\
+**Current version:** 0.4.1\
 **Maintainer:** SephrinMods\
 **Thunderstore:**
 https://thunderstore.io/c/valheim/p/SephrinMods/VikingNPC_Continued/
@@ -24,7 +24,7 @@ tamed and equipped, assist the player, perform several tool-based
 activities, and be configured through the mod's configuration and YAML
 files.
 
-Version 0.4.0 continues the original mod while updating the source for
+VikingNPC Continued maintains the original mod while updating the source for
 compatibility with Valheim 1.0. Existing technical identifiers have
 intentionally been retained where possible to preserve compatibility
 with existing configurations, prefab references, saves, and multiplayer
@@ -125,7 +125,7 @@ control through `.gitignore`.
 
 ## Compatibility
 
-Version 0.4.0 retains important original identifiers:
+VikingNPC Continued retains important original identifiers:
 
 -   Plugin GUID: `RustyMods.Norsemen`
 -   Configuration file: `RustyMods.Norsemen.cfg`
@@ -144,6 +144,14 @@ system with additional professions, behaviors, and gameplay systems.
 Keeping them separate allows VikingNPC Continued to remain recognizable
 and comparatively faithful to the original while LivingNorsemen can
 evolve independently.
+
+## Version 0.4.1
+
+Bug-fix release addressing NPC persistence issues reported following the 0.4.0 release.
+
+- Fixed equipped armor and weapon appearances not persisting correctly after NPCs unload and reload.
+- Fixed resurrected Norsemen disappearing after leaving load distance.
+- Fixed resurrected Norsemen disappearing after logging out and reloading the world.
 
 ## Version 0.4.0
 

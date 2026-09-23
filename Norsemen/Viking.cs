@@ -1311,40 +1311,134 @@ public class Viking : Humanoid, Interactable, TextReceiver
 
     protected override void SetupVisEquipment(VisEquipment visEq, bool isRagdoll)
     {
+        int leftItemHash =
+            base.m_leftItem != null && base.m_leftItem.m_dropPrefab != null
+                ? Utils.GetPrefabName(base.m_leftItem.m_dropPrefab).GetStableHashCode()
+                : 0;
+
+        int leftItemVariant =
+            base.m_leftItem != null
+                ? base.m_leftItem.m_variant
+                : 0;
+
+        int rightItemHash =
+            base.m_rightItem != null && base.m_rightItem.m_dropPrefab != null
+                ? Utils.GetPrefabName(base.m_rightItem.m_dropPrefab).GetStableHashCode()
+                : 0;
+
+        int chestItemHash =
+            base.m_chestItem != null && base.m_chestItem.m_dropPrefab != null
+                ? Utils.GetPrefabName(base.m_chestItem.m_dropPrefab).GetStableHashCode()
+                : 0;
+
+        int legItemHash =
+            base.m_legItem != null && base.m_legItem.m_dropPrefab != null
+                ? Utils.GetPrefabName(base.m_legItem.m_dropPrefab).GetStableHashCode()
+                : 0;
+
+        int helmetItemHash =
+            base.m_helmetItem != null && base.m_helmetItem.m_dropPrefab != null
+                ? Utils.GetPrefabName(base.m_helmetItem.m_dropPrefab).GetStableHashCode()
+                : 0;
+
+        // Persist the equipped visual state to the Viking's ZDO.
+        // This allows the appearance to survive unload/reload.
+        if (
+            !isRagdoll &&
+            m_nview != null &&
+            m_nview.IsValid() &&
+            m_nview.GetZDO() != null
+        )
+        {
+            ZDO zdo = m_nview.GetZDO();
+
+            zdo.Set(
+                ZDOVars.s_chestItem,
+                chestItemHash,
+                false
+            );
+
+            zdo.Set(
+                ZDOVars.s_legItem,
+                legItemHash,
+                false
+            );
+
+            zdo.Set(
+                ZDOVars.s_helmetItem,
+                helmetItemHash,
+                false
+            );
+
+            zdo.Set(
+                ZDOVars.s_leftItem,
+                leftItemHash,
+                false
+            );
+
+            zdo.Set(
+                ZDOVars.s_leftItemVariant,
+                leftItemVariant,
+                false
+            );
+
+            zdo.Set(
+                ZDOVars.s_rightItem,
+                rightItemHash,
+                false
+            );
+        }
+
         if (!isRagdoll)
         {
             visEq.SetLeftItem(
-                base.m_leftItem != null ? base.m_leftItem.m_dropPrefab.name.GetStableHashCode() : 0,
-                base.m_leftItem != null ? base.m_leftItem.m_variant : 0,
-                base.m_leftItem != null ? base.m_leftItem.m_quality : 0);
+                leftItemHash,
+                leftItemVariant,
+                base.m_leftItem != null ? base.m_leftItem.m_quality : 0
+            );
 
             visEq.SetRightItem(
-                base.m_rightItem != null ? base.m_rightItem.m_dropPrefab.name.GetStableHashCode() : 0,
-                base.m_rightItem != null ? base.m_rightItem.m_quality : 0);
+                rightItemHash,
+                base.m_rightItem != null ? base.m_rightItem.m_quality : 0
+            );
         }
 
-        visEq.SetChestItem(
-            base.m_chestItem != null ? base.m_chestItem.m_dropPrefab.name.GetStableHashCode() : 0);
-
-        visEq.SetLegItem(
-            base.m_legItem != null ? base.m_legItem.m_dropPrefab.name.GetStableHashCode() : 0);
-
-        visEq.SetHelmetItem(
-            base.m_helmetItem != null ? base.m_helmetItem.m_dropPrefab.name.GetStableHashCode() : 0);
+        visEq.SetChestItem(chestItemHash);
+        visEq.SetLegItem(legItemHash);
+        visEq.SetHelmetItem(helmetItemHash);
 
         visEq.SetShoulderItem(
-            base.m_shoulderItem != null ? base.m_shoulderItem.m_dropPrefab.name.GetStableHashCode() : 0,
-            base.m_shoulderItem != null ? base.m_shoulderItem.m_variant : 0,
-            base.m_shoulderItem != null ? base.m_shoulderItem.m_quality : 0);
+            base.m_shoulderItem != null
+                ? base.m_shoulderItem.m_dropPrefab.name.GetStableHashCode()
+                : 0,
+            base.m_shoulderItem != null
+                ? base.m_shoulderItem.m_variant
+                : 0,
+            base.m_shoulderItem != null
+                ? base.m_shoulderItem.m_quality
+                : 0
+        );
 
         visEq.SetUtilityItem(
-            base.m_utilityItem != null ? base.m_utilityItem.m_dropPrefab.name.GetStableHashCode() : 0);
+            base.m_utilityItem != null
+                ? base.m_utilityItem.m_dropPrefab.name.GetStableHashCode()
+                : 0
+        );
 
         visEq.SetTrinketItem(
-            base.m_trinketItem != null ? base.m_trinketItem.m_dropPrefab.name : "");
+            base.m_trinketItem != null
+                ? base.m_trinketItem.m_dropPrefab.name
+                : ""
+        );
 
-        visEq.SetBeardItem(base.m_beardItem.GetStableHashCode());
-        visEq.SetHairItem(base.m_hairItem.GetStableHashCode());
+        visEq.SetBeardItem(
+            base.m_beardItem.GetStableHashCode()
+        );
+
+        visEq.SetHairItem(
+            base.m_hairItem.GetStableHashCode()
+        );
+
         visEq.SetHairColor(m_hairColor);
         visEq.SetSkinColor(m_skinColor);
     }

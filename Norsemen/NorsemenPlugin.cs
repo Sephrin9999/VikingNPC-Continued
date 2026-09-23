@@ -13,7 +13,7 @@ namespace Norsemen;
 public class NorsemenPlugin : BaseUnityPlugin
 {
     internal const string ModName = "Norsemen Continued";
-    internal const string ModVersion = "0.4.0";
+    internal const string ModVersion = "0.4.1";
     internal const string Author = "SephrinMods";
     public const string ModGUID = "RustyMods.Norsemen";
 
