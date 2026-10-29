@@ -694,12 +694,21 @@ public class VikingAI : MonsterAI
         }
     }
 
-    public void SetMovement(int state)
+        public void SetMovement(int state)
     {
         if (state != (int)m_moveType)
         {
             m_moveType = (Movement)state;
-            m_nview.GetZDO().Set(VikingVars.patrol, state, false);
+
+            m_nview.GetZDO().Set(
+                VikingVars.patrol,
+                state,
+                false);
+
+            if (m_moveType == Movement.Patrol)
+            {
+                SetPatrolPoint();
+            }
         }
     }
 
@@ -1179,7 +1188,15 @@ public class VikingAI : MonsterAI
             flag ||
             !isTamed;
 
-        if (flag2 & flag3)
+        bool aggressiveGuardHasEnemy =
+            isTamed &&
+            m_moveType == Movement.Guard &&
+            m_behaviour == Emotion.Aggressive &&
+            targetCreature != null &&
+            !targetCreature.IsDead() &&
+            IsEnemy(targetCreature);
+
+        if (flag2 && flag3 && !aggressiveGuardHasEnemy)
         {
             FindStaticTargets(hasPlayerTarget);
         }
@@ -2627,8 +2644,8 @@ public class VikingAI : MonsterAI
 
 	public override bool UpdateAI(float dt)
 	{
-		if (!UpdateBaseAI(dt))
-		{
+        if (!base.UpdateAI(dt))
+        {
 			return false;
 		}
 		bool flag = ((Character)m_viking).IsTamed();
@@ -2712,15 +2729,17 @@ public class VikingAI : MonsterAI
 		{
 			return true;
 		}
-		if (!flag2 && (!flag || m_moveType == Movement.Patrol))
-		{
+
+        if (!flag2 && (!flag || m_moveType == Movement.Patrol))
+        {
             IdleMovement(dt);
         }
-		else
-		{
+        else
+        {
             StopMoving();
         }
-		if (!flag5 || !flag3)
+
+        if (!flag5 || !flag3)
 		{
 			((BaseAI)this).ChargeStop();
 		}

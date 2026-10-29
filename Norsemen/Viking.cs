@@ -1343,7 +1343,8 @@ public class Viking : Humanoid, Interactable, TextReceiver
 
         // Persist the equipped visual state to the Viking's ZDO.
         // This allows the appearance to survive unload/reload.
-        if (
+        
+		if (
             !isRagdoll &&
             m_nview != null &&
             m_nview.IsValid() &&
@@ -1388,7 +1389,7 @@ public class Viking : Humanoid, Interactable, TextReceiver
                 false
             );
         }
-
+		
         if (!isRagdoll)
         {
             visEq.SetLeftItem(
@@ -1692,18 +1693,20 @@ public class Viking : Humanoid, Interactable, TextReceiver
 
 	public bool OnConsumedItem(ItemDrop.ItemData item)
 	{
-		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
-		//IL_002e: Unknown result type (might be due to invalid IL or missing references)
-		if (IsHungry() && item.m_shared.m_food > 0f)
-		{
-			m_sootheEffect.Create(((Character)this).GetCenterPoint(), Quaternion.identity);
-			ResetFeedingTimer();
-			m_queuedTexts.Clear();
-			QueueSay(TalkManager.GetTalk(TalkManager.TalkType.Eat), item.m_shared.m_name);
-			string trigger = (item.m_shared.m_isDrink ? "drink" : "eat");
-			m_zanim.SetTrigger(trigger);
-			return true;
-		}
+        //IL_0029: Unknown result type (might be due to invalid IL or missing references)
+        //IL_002e: Unknown result type (might be due to invalid IL or missing references)
+        if (IsHungry() && item.m_shared.m_food > 0f)
+        {
+            m_sootheEffect.Create(((Character)this).GetCenterPoint(),Quaternion.identity);
+            ResetFeedingTimer();
+            ((Character)this).Heal(item.m_shared.m_food,true);
+            m_queuedTexts.Clear();
+            QueueSay(TalkManager.GetTalk(TalkManager.TalkType.Eat),item.m_shared.m_name);
+            string trigger = item.m_shared.m_isDrink ? "drink" : "eat";
+            m_zanim.SetTrigger(trigger);
+            return true;
+        }
+
         if (item.m_shared.m_consumeStatusEffect != null)
         {
 			bool flag = item.m_shared.m_consumeStatusEffect is SE_Puke;

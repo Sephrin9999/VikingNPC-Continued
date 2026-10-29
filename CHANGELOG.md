@@ -1,5 +1,16 @@
 # Changelog
+## 0.4.2 - Persistence Fixes
 
+### Bug Fixes
+
+- Fixed NPC not moving when set to patrol.
+- Fixed NPC health regeneration. (Eating food still gives an instant health boost)
+
+### Technical
+
+- Adjusted call to update base.updateAI which controlled countdowns, which influences path finding for NPCs and health regeneration.
+
+---
 ## 0.4.1 - Persistence Fixes
 
 ### Bug Fixes
