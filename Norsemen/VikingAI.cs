@@ -210,6 +210,21 @@ public class VikingAI : MonsterAI
         return false;
     }
 
+    private static readonly System.Reflection.FieldInfo RandomMoveTimerField =
+    typeof(BaseAI).GetField(
+        "m_randomMoveUpdateTimer",
+        System.Reflection.BindingFlags.Instance |
+        System.Reflection.BindingFlags.NonPublic);
+
+    private static readonly System.Reflection.MethodInfo RegenerationMethod =
+    typeof(BaseAI).GetMethod(
+        "UpdateRegeneration",
+        System.Reflection.BindingFlags.Instance |
+        System.Reflection.BindingFlags.NonPublic,
+        null,
+        new System.Type[] { typeof(float) },
+        null);
+
     private ItemDrop FindClosestConsumableItem(float maxRange)
     {
         if (m_vikingItemMask == 0)
@@ -678,6 +693,21 @@ public class VikingAI : MonsterAI
         if (!m_nview.IsOwner())
         {
             return false;
+        }
+
+        if (RandomMoveTimerField != null)
+        {
+            float timer = (float)RandomMoveTimerField.GetValue(this);
+
+            if (timer > 0f)
+            {
+                RandomMoveTimerField.SetValue(this, timer - dt);
+            }
+        }
+
+        if (RegenerationMethod != null)
+        {
+            RegenerationMethod.Invoke(this, new object[] { dt });
         }
 
         m_timeSinceHurt -= dt;
@@ -1929,6 +1959,7 @@ public class VikingAI : MonsterAI
         //IL_004d: Unknown result type (might be due to invalid IL or missing references)
         //IL_0058: Unknown result type (might be due to invalid IL or missing references)
         //IL_00cb: Unknown result type (might be due to invalid IL or missing references)
+
         if (m_mineRock == null)
         {
             return false;
@@ -1948,12 +1979,23 @@ public class VikingAI : MonsterAI
 				return false;
 			}
 		}
-        if (!MoveTo(dt, m_mineRock.transform.position, pickaxe.m_shared.m_attack.m_attackRange, false))
+        Vector3 targetPoint = m_mineRock.transform.position;
+
+        Collider collider = m_mineRock.GetComponentInChildren<Collider>();
+
+        if (collider != null)
         {
-			return true;
-		}
+            targetPoint = collider.ClosestPoint(transform.position);
+        }
+
+        if (!MoveTo(dt, targetPoint, 2f, false))
+        {
+            return true;
+        }
+
         StopMoving();
-        LookAt(m_mineRock.transform.position);
+        LookAt(targetPoint);
+
         DoPickaxe(pickaxe, m_mineRock);
 		m_lastWorkActionTime = Time.time;
         m_nview.GetZDO().Set(VikingVars.lastWorkTime, ZNet.instance.GetTime().Ticks);
@@ -1975,25 +2017,9 @@ public class VikingAI : MonsterAI
 
         Vector3 closestPoint;
 
-        if (m_lastMineRock5Point != Vector3.zero)
-        {
-            float distance = Vector3.Distance(
-                m_lastMineRock5Point,
-                transform.position);
-
-            if (distance < 10f)
-            {
-                closestPoint = m_lastMineRock5Point;
-            }
-            else
-            {
-                FindNearestPoint(m_mineRock5, out closestPoint);
-            }
-        }
-        else
-        {
-            FindNearestPoint(m_mineRock5, out closestPoint);
-        }
+        
+        FindNearestPoint(m_mineRock5, out closestPoint);
+        
 
         m_lastMineRock5Point = closestPoint;
 
@@ -2047,7 +2073,9 @@ public class VikingAI : MonsterAI
 
         foreach (Collider collider in colliders)
         {
-            if (collider == null)
+            if (collider == null ||
+                !collider.enabled ||
+                !collider.gameObject.activeInHierarchy)
             {
                 continue;
             }
@@ -2077,6 +2105,7 @@ public class VikingAI : MonsterAI
 
     public bool UpdateDestructibleMining(float dt, ItemDrop.ItemData pickaxe, bool isFollowing)
     {
+
         if (m_destructible == null)
         {
             return false;
@@ -2144,11 +2173,6 @@ public class VikingAI : MonsterAI
     public void DoPickaxe(ItemDrop.ItemData pickaxe, MineRock mineRock)
     {
         bool started = m_viking.StartWork(pickaxe);
-
-        NorsemenPlugin.LogDebug(
-            $"[{m_viking.GetName()}] DoPickaxe MineRock - StartWork={started}, " +
-            $"Pickaxe={pickaxe?.m_shared?.m_name}, " +
-            $"Range={pickaxe?.m_shared?.m_attack?.m_attackRange}");
 
         if (started)
         {
@@ -2644,11 +2668,15 @@ public class VikingAI : MonsterAI
 
 	public override bool UpdateAI(float dt)
 	{
-        if (!base.UpdateAI(dt))
+
+        bool useVanillaAI = !hasWorkTarget;
+
+        if (!UpdateBaseAI(dt))
         {
-			return false;
-		}
-		bool flag = ((Character)m_viking).IsTamed();
+            return false;
+        }
+
+        bool flag = ((Character)m_viking).IsTamed();
 		if (flag)
 		{
 			UpdateBehaviour(dt);
@@ -2700,8 +2728,8 @@ public class VikingAI : MonsterAI
 		bool flag4 = !flag || m_moveType != Movement.Guard;
 		if (!flag3 & flag4)
 		{
-			FindWorkTargets(dt);
-			if (hasWorkTarget && UpdateWork(dt, m_viking.m_pickaxe, m_viking.m_axe, m_viking.m_fishingRod, flag2))
+            FindWorkTargets(dt);
+            if (hasWorkTarget && UpdateWork(dt, m_viking.m_pickaxe, m_viking.m_axe, m_viking.m_fishingRod, flag2))
 			{
 				return true;
 			}
@@ -2748,7 +2776,8 @@ public class VikingAI : MonsterAI
 
 	public bool UpdateWork(float dt, ItemDrop.ItemData pickaxe, ItemDrop.ItemData axe, ItemDrop.ItemData fishingRod, bool isFollowing)
 	{
-		if (m_viking.IsInUse())
+
+        if (m_viking.IsInUse())
 		{
 			return false;
 		}
@@ -2771,7 +2800,8 @@ public class VikingAI : MonsterAI
 			return true;
 		}
 		bool flag = NorsemanConfigs.CanVikingMine(m_viking.prefabName);
-		if ((pickaxe != null) & flag)
+
+        if ((pickaxe != null) & flag)
 		{
 			if (UpdateMineRockMining(dt, pickaxe, isFollowing))
 			{

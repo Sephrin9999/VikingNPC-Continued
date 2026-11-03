@@ -356,7 +356,7 @@ Mistlands:
     - ArmorPaddedCuirass
     - CapeLinen
     - MaceNeedle
-    requiredDefeatKey: defeated_goblingking
+    requiredDefeatKey: defeated_goblinking
     weight: 0.6
   - prefabNames:
     - HelmetCarapace
@@ -426,4 +426,37 @@ AshLands:
     - StaffRoot
     - StaffGreenRoots
     requiredDefeatKey: defeated_queen
+    weight: 0.8
+DeepNorth:
+  randomItems:
+  - prefabName: Coins
+    chance: 0.5
+    min: 1
+    max: 100
+  randomSets:
+  - prefabNames:
+    - HelmetCarapace
+    - ArmorCarapaceChest
+    - ArmorCarapaceLegs
+    - ShieldCarapace
+    - SpearCarapace
+    - Demister
+    requiredDefeatKey: defeated_queen
+    weight: 0.7
+  - prefabNames:
+    - HelmetFlametal
+    - ArmorFlametalChest
+    - ArmorFlametalLegs
+    - CapeAsh
+    - SwordNiedhogg
+    - ShieldFlametalTower
+    requiredDefeatKey: defeated_fader
+    weight: 0.8
+  - prefabNames:
+    - HelmetMage_Ashlands
+    - ArmorMageChest_Ashlands
+    - ArmorMageLegs_Ashlands
+    - StaffRoot
+    - StaffGreenRoots
+    requiredDefeatKey: defeated_fader
     weight: 0.8

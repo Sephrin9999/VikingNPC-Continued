@@ -149,22 +149,56 @@ public static class CustomizationManager
 		}
 	}
 
-	public static void Read()
-	{
-		try
-		{
-			string input = File.ReadAllText(FilePath);
-			Dictionary<Heightmap.Biome, Equipment> dictionary = ConfigManager.deserializer.Deserialize<Dictionary<Heightmap.Biome, Equipment>>(input);
-			equipment = dictionary;
-		}
-		catch (Exception ex)
-		{
-			NorsemenPlugin.LogError("Failed to deserialize: " + FileName);
-			Debug.LogError((object)ex.Message);
-		}
-	}
+    public static void Read()
+    {
+        try
+        {
+            string input = File.ReadAllText(FilePath);
 
-	public static void Add(Heightmap.Biome biome, params ConditionalWeightedSet[] set)
+            Dictionary<Heightmap.Biome, Equipment> dictionary =
+                ConfigManager.deserializer.Deserialize<Dictionary<Heightmap.Biome, Equipment>>(input);
+
+            // Load the latest default equipment configurations.
+            string defaultYaml = EmbeddedResourceManager.GetFile(FileName);
+
+            Dictionary<Heightmap.Biome, Equipment> defaults =
+                ConfigManager.deserializer.Deserialize<Dictionary<Heightmap.Biome, Equipment>>(defaultYaml);
+
+            bool updated = false;
+
+            // Add newly introduced biomes without overwriting existing settings.
+            foreach (var entry in defaults)
+            {
+                if (!dictionary.ContainsKey(entry.Key))
+                {
+                    dictionary.Add(entry.Key, entry.Value);
+                    updated = true;
+
+                    UnityEngine.Debug.Log(
+                        $"[Norsemen] Added missing equipment configuration: {entry.Key}");
+                }
+            }
+
+            equipment = dictionary;
+
+            // Only rewrite the configuration when new biome entries were added.
+            if (updated)
+            {
+                string updatedYaml = ConfigManager.serializer.Serialize(dictionary);
+                File.WriteAllText(FilePath, updatedYaml);
+
+                UnityEngine.Debug.Log(
+                    "[Norsemen] Equipment configuration updated with missing biomes.");
+            }
+        }
+        catch (Exception ex)
+        {
+            NorsemenPlugin.LogError("Failed to deserialize: " + FileName);
+            Debug.LogError((object)ex.Message);
+        }
+    }
+
+    public static void Add(Heightmap.Biome biome, params ConditionalWeightedSet[] set)
 	{
 		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0029: Unknown result type (might be due to invalid IL or missing references)
@@ -202,8 +236,8 @@ public static class CustomizationManager
 
 	public static List<ConditionalWeightedSet> GetSets(Heightmap.Biome biome)
 	{
-		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		if (!equipment.TryGetValue(biome, out var value))
+        //IL_0006: Unknown result type (might be due to invalid IL or missing references)
+        if (!equipment.TryGetValue(biome, out var value))
 		{
 			return new List<ConditionalWeightedSet>();
 		}

@@ -4,7 +4,7 @@ Community-maintained continuation of **VikingNPC (Norsemen)**,
 originally created by **RustyMods**, updated for compatibility with
 **Valheim 1.0**.
 
-**Current version:** 0.4.2\
+**Current version:** 0.4.3\
 **Maintainer:** SephrinMods\
 **Thunderstore:**
 https://thunderstore.io/c/valheim/p/SephrinMods/VikingNPC_Continued/
@@ -12,7 +12,7 @@ https://thunderstore.io/c/valheim/p/SephrinMods/VikingNPC_Continued/
 > This continuation is published with permission from the original
 > author. Credit for the original VikingNPC/Norsemen mod and its core
 > systems belongs to RustyMods.
-
+(Contact info added below)
 ## About
 
 VikingNPC adds friendly Viking/Norsemen NPCs to Valheim. Norsemen can be
@@ -83,6 +83,7 @@ Mountains_Norseman_RS
 Plains_Norseman_RS
 Mistlands_Norseman_RS
 Ashlands_Norseman_RS
+DeepNorth_Norseman_RS
 ```
 
 ## Console Commands
@@ -141,6 +142,22 @@ Keeping them separate allows VikingNPC Continued to remain recognizable
 and comparatively faithful to the original while LivingNorsemen can
 evolve independently.
 
+## Version 0.4.3
+
+Adds:
+- Added naturally spawning Norsemen in the Deep North biome.
+- Added DeepNorth_Norseman_RS for manual spawning.
+- Added Deep North equipment sets featuring Ashlands-tier warrior and mage gear.
+- Added automatic migration of missing biome equipment configurations into existing YAML files while preserving user customizations.
+
+Bugs Fixes:
+- Fixed patrol behavior conflicting with NPC job execution, causing Norsemen to pace in one location.
+- Fixed Norsemen failing to fire crossbows due to reload handling.
+
+Cleanup:
+- Removed obsolete resurrection debug logging.
+- Removed temporary diagnostic logging.
+
 ## Version 0.4.2
 
 Bug-fix release addressing NPC persistence issues reported following the 0.4.1 release.
@@ -182,3 +199,15 @@ No new license has been applied to this repository at this time. The
 continuation is published with permission from the original author.
 Licensing of the original source should not be assumed beyond the
 permissions granted by its original author.
+
+## Community & Support
+
+Have questions, suggestions, or feedback about VikingNPC Continued?
+
+- **Discord:** [Join our Discord community](https://discord.gg/qKFn46jmu)
+- **GitHub:** [VikingNPC Continued](https://github.com/Sephrin9999/VikingNPC-Continued)
+
+Join the Discord to discuss the mod, report bugs and technical issue, share ideas, and get help.
+
+Also look into my follow-on project LivingNorsemen! A VikingNPC-continued extension adding more jobs/behaviors.
+Link is on discord and on Github!

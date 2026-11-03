@@ -1,5 +1,21 @@
 # Changelog
-## 0.4.2 - Persistence Fixes
+## 0.4.3
+
+### Added
+- Added naturally spawning Norsemen in the Deep North biome.
+- Added `DeepNorth_Norseman_RS` for manual spawning.
+- Added Deep North equipment sets featuring Ashlands-tier warrior and mage gear.
+- Added automatic migration of missing biome equipment configurations into existing YAML files while preserving user customizations.
+
+### Fixed
+- Fixed patrol behavior conflicting with NPC job execution, causing NPCs to pace in one location.
+- Fixed Norsemen failing to fire crossbows due to reload handling.
+
+### Cleanup
+- Removed obsolete resurrection debug logging.
+- Removed temporary diagnostic logging.
+
+## 0.4.2 
 
 ### Bug Fixes
 

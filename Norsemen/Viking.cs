@@ -436,6 +436,9 @@ public class Viking : Humanoid, Interactable, TextReceiver
 	public float armor;
 
 	public ItemDrop.ItemData m_weaponLoaded;
+    private ItemDrop.ItemData m_crossbowReloadWeapon;
+    private float m_crossbowReloadTimer = 0f;
+    private bool m_crossbowReloading = false;
     private bool m_isWorking;
     public bool IsWorking()
     {
@@ -766,17 +769,106 @@ public class Viking : Humanoid, Interactable, TextReceiver
             base.m_currentAttack = null;
 		}
 	}
-
-	private void SetWeaponLoaded(ItemDrop.ItemData weapon)
-	{
-		if (weapon != m_weaponLoaded)
-		{
-			m_weaponLoaded = weapon;
-            m_nview.GetZDO().Set(ZDOVars.s_weaponLoaded, weapon != null);
+	    public override bool IsWeaponLoaded()
+    {
+        if (!m_nview.IsValid())
+        {
+            return false;
         }
-	}
 
-	public void SetBlocking(bool block)
+        if (!m_nview.IsOwner())
+        {
+            return m_nview.GetZDO().GetBool(ZDOVars.s_weaponLoaded);
+        }
+
+        return m_weaponLoaded != null;
+    }
+
+    private void SetWeaponLoaded(ItemDrop.ItemData weapon)
+    {
+        if (weapon != m_weaponLoaded)
+        {
+            m_weaponLoaded = weapon;
+
+            if (m_nview.IsValid() && m_nview.IsOwner())
+            {
+                m_nview.GetZDO().Set(
+                    ZDOVars.s_weaponLoaded,
+                    weapon != null);
+            }
+        }
+    }
+
+    private void UpdateCrossbowReload(float dt)
+    {
+        ItemDrop.ItemData weapon = GetCurrentWeapon();
+
+        // Cancel reloading if the weapon changes or no longer requires reloading.
+        if (weapon == null || !weapon.m_shared.m_attack.m_requiresReload)
+        {
+            if (m_crossbowReloading)
+            {
+                m_zanim.SetBool(
+                    m_crossbowReloadWeapon.m_shared.m_attack.m_reloadAnimation,
+                    false);
+            }
+
+            m_crossbowReloading = false;
+            m_crossbowReloadWeapon = null;
+            m_crossbowReloadTimer = 0f;
+            SetWeaponLoaded(null);
+            return;
+        }
+
+        // Cancel the previous reload if the equipped weapon changes.
+        if (m_crossbowReloading && m_crossbowReloadWeapon != weapon)
+        {
+            m_zanim.SetBool(
+                m_crossbowReloadWeapon.m_shared.m_attack.m_reloadAnimation,
+                false);
+
+            m_crossbowReloading = false;
+            m_crossbowReloadWeapon = null;
+            m_crossbowReloadTimer = 0f;
+        }
+
+        // The weapon is already loaded.
+        if (m_weaponLoaded == weapon)
+        {
+            return;
+        }
+
+        // Begin reloading.
+        if (!m_crossbowReloading)
+        {
+            m_crossbowReloadWeapon = weapon;
+            m_crossbowReloadTimer = 0f;
+            m_crossbowReloading = true;
+
+            m_zanim.SetBool(
+                weapon.m_shared.m_attack.m_reloadAnimation,
+                true);
+        }
+
+        // Advance the reload timer.
+        m_crossbowReloadTimer += dt;
+
+        if (m_crossbowReloadTimer >= weapon.m_shared.m_attack.m_reloadTime)
+        {
+            string animation = weapon.m_shared.m_attack.m_reloadAnimation;
+
+            m_zanim.SetBool(animation, false);
+            m_zanim.SetTrigger(animation + "_done");
+
+            SetWeaponLoaded(weapon);
+
+            m_crossbowReloading = false;
+            m_crossbowReloadWeapon = null;
+            m_crossbowReloadTimer = 0f;
+        }
+    }
+
+    public void SetBlocking(bool block)
 	{
         m_blocking = block;
     }
@@ -1017,8 +1109,8 @@ public class Viking : Humanoid, Interactable, TextReceiver
 		//IL_0021: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0028: Unknown result type (might be due to invalid IL or missing references)
 		Heightmap.Biome biome = (Heightmap.Biome)(NorsemanConfigs.TryGetConfig(prefabName, out var config) ? ((int)config.biome) : 0);
-		List<ConditionalWeightedSet> sets = CustomizationManager.GetSets(biome);
-		List<ConditionalChanceItem> items = CustomizationManager.GetItems(biome);
+        List<ConditionalWeightedSet> sets = CustomizationManager.GetSets(biome);
+        List<ConditionalChanceItem> items = CustomizationManager.GetItems(biome);
 		List<ConditioanlWeightedItem> weapons = CustomizationManager.GetWeapons(biome);
 		m_conditionalItemSets = sets.Select((ConditionalWeightedSet x) => x.set).ToArray();
 		m_conditionalRandomItems = items.Select((ConditionalChanceItem x) => x.item).ToArray();
@@ -2615,7 +2707,8 @@ public class Viking : Humanoid, Interactable, TextReceiver
 			float deltaTime = Time.deltaTime;
 			UpdateSavedFollowTarget();
 			UpdateTalk(deltaTime);
-		}
+            UpdateCrossbowReload(deltaTime);
+        }
 	}
 
 	public override string GetHoverName()

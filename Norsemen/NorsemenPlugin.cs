@@ -13,7 +13,7 @@ namespace Norsemen;
 public class NorsemenPlugin : BaseUnityPlugin
 {
     internal const string ModName = "Norsemen Continued";
-    internal const string ModVersion = "0.4.2";
+    internal const string ModVersion = "0.4.3";
     internal const string Author = "SephrinMods";
     public const string ModGUID = "RustyMods.Norsemen";
 
@@ -52,7 +52,8 @@ public class NorsemenPlugin : BaseUnityPlugin
 
 	public void Awake()
 	{
-		instance = this;
+
+        instance = this;
 		SetupTombstone();
 		SetupNorsemen();
 		SetupCommands();
@@ -68,8 +69,8 @@ public class NorsemenPlugin : BaseUnityPlugin
 		Assembly executingAssembly = Assembly.GetExecutingAssembly();
 		_harmony.PatchAll(executingAssembly);
 	}
-
-	private static void SetupNorsemen()
+    
+    private static void SetupNorsemen()
 	{
 		Faction faction = new Faction("Norsemen", friendly: true);
         Norseman norseman = new Norseman((Heightmap.Biome)1, "Meadows_Norseman_RS", faction);
@@ -93,7 +94,10 @@ public class NorsemenPlugin : BaseUnityPlugin
 		Norseman norseman7 = new Norseman((Heightmap.Biome)32, "AshLands_Norseman_RS", faction);
 		norseman7.baseHealth = 350f;
 		norseman7.baseArmor = 30f;
-	}
+        Norseman norseman8 = new Norseman(Heightmap.Biome.DeepNorth,"DeepNorth_Norseman_RS",faction);
+        norseman8.baseHealth = 400f;
+        norseman8.baseArmor = 35f;
+    }
 
 	private static void SetupTombstone()
 	{

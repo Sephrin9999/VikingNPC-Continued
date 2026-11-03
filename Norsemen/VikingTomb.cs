@@ -226,12 +226,6 @@ public class VikingTomb : MonoBehaviour
 		int num2 = m_nview.GetZDO().GetInt(ZDOVars.s_modelIndex, 0);
 		string text3 = m_nview.GetZDO().GetString(ZDOVars.s_hairItem, "");
 		string text4 = m_nview.GetZDO().GetString(ZDOVars.s_beardItem, "");
-        ((Character)m_reviver).Message(
-			MessageHud.MessageType.Center,
-			$"Tomb hair: '{text3}' | beard: '{text4}'",
-			0,
-			null,
-			false);
         Vector3 vec2 = m_nview.GetZDO().GetVec3(ZDOVars.s_skinColor, Vector3.one);
         ZPackage inventoryPackage = new ZPackage();
         m_container.GetInventory().Save(inventoryPackage);
