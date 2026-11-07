@@ -13,7 +13,7 @@ namespace Norsemen;
 public class NorsemenPlugin : BaseUnityPlugin
 {
     internal const string ModName = "Norsemen Continued";
-    internal const string ModVersion = "0.4.3";
+    internal const string ModVersion = "0.4.4";
     internal const string Author = "SephrinMods";
     public const string ModGUID = "RustyMods.Norsemen";
 
@@ -246,7 +246,9 @@ public class NorsemenPlugin : BaseUnityPlugin
 			VikingTomb.RemoveAll();
 			return true;
 		}, null, isSecret: false, adminOnly: true);
-	}
+
+       
+    }
 
 	private void OnDestroy()
 	{

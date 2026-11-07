@@ -83,14 +83,130 @@ public static class CommandManager
 		{
             Terminal.ConsoleEventFailable val = delegate (Terminal.ConsoleEventArgs args)
             {
-				if (args.Length < 2)
-				{
-					return false;
-				}
-				NorseCommand value;
-				return (!commands.TryGetValue(args[1], out value)) ? ((object)false) : ((object)value.Run(args));
-			};
-			_003C_003Ec._003C_003E9__3_0 = val;
+                if (args.Length < 2)
+                {
+                    return false;
+                }
+
+                string selection = args[1].ToLowerInvariant();
+
+                // Preserve existing Norsemen subcommands.
+                if (commands.TryGetValue(selection, out NorseCommand value))
+                {
+                    return value.Run(args);
+                }
+
+                // Recognize biome selections and optional race suffixes.
+                string biome = selection;
+                string race = "Configured";
+
+                if (selection.EndsWith("-h"))
+                {
+                    biome = selection.Substring(0, selection.Length - 2);
+                    race = "Human";
+                }
+                else if (selection.EndsWith("-e"))
+                {
+                    biome = selection.Substring(0, selection.Length - 2);
+                    race = "Elf";
+                }
+
+                string[] validBiomes =
+                {
+                    "meadows",
+                    "blackforest",
+                    "swamp",
+                    "mountains",
+                    "plains",
+                    "mistlands",
+                    "ashlands",
+                    "deepnorth"
+                };
+
+                if (Array.IndexOf(validBiomes, biome) < 0)
+                {
+                    Debug.LogWarning($"[VikingNPC] Unknown Norsemen command or biome: {selection}");
+                    return false;
+                }
+                string prefabName = biome switch
+                {
+                    "meadows" => "Meadows_Norseman_RS",
+                    "blackforest" => "BlackForest_Norseman_RS",
+                    "swamp" => "Swamp_Norseman_RS",
+                    "mountains" => "Mountains_Norseman_RS",
+                    "plains" => "Plains_Norseman_RS",
+                    "mistlands" => "Mistlands_Norseman_RS",
+                    "ashlands" => "AshLands_Norseman_RS",
+                    "deepnorth" => "DeepNorth_Norseman_RS",
+                    _ => null
+                };
+
+                Debug.Log($"[VikingNPC] Selected prefab: {prefabName}");
+                if (ZNetScene.instance == null)
+                {
+                    Debug.LogWarning("[VikingNPC] Cannot spawn: ZNetScene is not available.");
+                    return false;
+                }
+
+                GameObject prefab = ZNetScene.instance.GetPrefab(prefabName);
+
+                if (prefab == null)
+                {
+                    Debug.LogWarning($"[VikingNPC] Cannot find registered prefab: {prefabName}");
+                    return false;
+                }
+
+                Debug.Log($"[VikingNPC] Prefab found successfully: {prefab.name}");
+                Player player = Player.m_localPlayer;
+
+                if (player == null)
+                {
+                    Debug.LogWarning("[VikingNPC] Cannot spawn: Local player not found.");
+                    return false;
+                }
+
+                // Spawn approximately 3 meters in front of the player.
+                Vector3 spawnPosition =
+                    player.transform.position + player.transform.forward * 3f;
+
+                spawnPosition.y = ZoneSystem.instance.GetSolidHeight(spawnPosition);
+
+                GameObject spawnedNPC = UnityEngine.Object.Instantiate(
+                    prefab,
+                    spawnPosition,
+                    Quaternion.identity
+                );
+
+                if (spawnedNPC == null)
+                {
+                    Debug.LogWarning("[VikingNPC] Failed to instantiate Norseman.");
+                    return false;
+                }
+
+                //Debug.Log($"[VikingNPC] Successfully spawned {prefabName} at {spawnPosition}");
+                Viking spawnedViking = spawnedNPC.GetComponent<Viking>();
+
+                if (spawnedViking != null)
+                {
+                    switch (race)
+                    {
+                        case "Human":
+                            spawnedViking.ForcedSpawnRace = NorsemanRace.Human;
+                            break;
+
+                        case "Elf":
+                            spawnedViking.ForcedSpawnRace = NorsemanRace.Elf;
+                            break;
+                    }
+
+                    //Debug.Log($"[VikingNPC] Applied spawn race: {race}");
+                }
+
+                //Debug.Log($"[VikingNPC] Biome: {biome}, Race: {race}");
+
+                return true;
+            };
+            _003C_003Ec._003C_003E9__3_0 = val;
 			obj = (object)val;
 		}
         new Terminal.ConsoleCommand(

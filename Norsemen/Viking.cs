@@ -490,7 +490,9 @@ public class Viking : Humanoid, Interactable, TextReceiver
 
 	public Vector3 m_skinColor;
 
-	public bool m_isElf;
+    public NorsemanRace? ForcedSpawnRace { get; set; }
+
+    public bool m_isElf;
 
 	public GameObject m_elfEars;
 
@@ -894,11 +896,31 @@ public class Viking : Humanoid, Interactable, TextReceiver
 			SetRandomBeard(isFemale);
 			SetRandomHairColor();
 			SetRandomSkinColor();
-			m_isElf = UnityEngine.Random.value > 0.5f;
-			m_nview.GetZDO().Set(VikingVars.isElf, m_isElf);
+            NorsemanRace spawnRace =
+				ForcedSpawnRace ?? NorsemanConfigs.GetSpawnRace(prefabName);
+
+            switch (spawnRace)
+            {
+                case NorsemanRace.Human:
+                    m_isElf = false;
+                    break;
+
+                case NorsemanRace.Elf:
+                    m_isElf = true;
+                    break;
+
+                default:
+                    m_isElf = UnityEngine.Random.value > 0.5f;
+                    break;
+            }
+            m_nview.GetZDO().Set(VikingVars.isElf, m_isElf);
 			m_nview.GetZDO().Set(VikingVars.isSet, true);
 		}
-		SetElfEars();
+        Debug.Log(
+			$"[VikingNPC] {prefabName} initialized as {(m_isElf ? "Elf" : "Human")} " +
+			$"(Configured Race: {NorsemanConfigs.GetSpawnRace(prefabName)})"
+		);
+        SetElfEars();
         SetHairEquipped(
 			base.m_visEquipment,
 			!string.IsNullOrEmpty(base.m_hairItem)

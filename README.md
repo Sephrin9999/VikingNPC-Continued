@@ -4,7 +4,7 @@ Community-maintained continuation of **VikingNPC (Norsemen)**,
 originally created by **RustyMods**, updated for compatibility with
 **Valheim 1.0**.
 
-**Current version:** 0.4.3\
+**Current version:** 0.4.4\
 **Maintainer:** SephrinMods\
 **Thunderstore:**
 https://thunderstore.io/c/valheim/p/SephrinMods/VikingNPC_Continued/
@@ -26,6 +26,7 @@ intentionally been retained where possible to preserve compatibility
 with existing configurations, prefab references, saves, and multiplayer
 synchronization.
 
+- **Discord:** [Join our Discord community](https://discord.gg/qKFn46jmu)
 ## Features
 
 -   Tameable Viking/Norsemen NPCs
@@ -91,6 +92,7 @@ DeepNorth_Norseman_RS
 ``` text
 norsemen tame
 norsemen clear_tombs
+norsemen biome
 ```
 
 ## Installation
@@ -141,6 +143,15 @@ system with additional professions, behaviors, and gameplay systems.
 Keeping them separate allows VikingNPC Continued to remain recognizable
 and comparatively faithful to the original while LivingNorsemen can
 evolve independently.
+
+## Version 0.4.4
+Adds:
+NPC race spawning: Configurable Human, Elf, or Random natural spawns, plus biome-specific spawn commands.
+
+Restored:
+Guard behavior: Stationary guards periodically face random directions without leaving their posts.
+Food consumption: Hungry patrolling NPCs seek dropped food, consume it, and resume patrolling.
+Food stacks: NPCs consume one item at a time instead of removing an entire stack.
 
 ## Version 0.4.3
 

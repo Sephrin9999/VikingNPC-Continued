@@ -1,4 +1,13 @@
 # Changelog
+## 0.4.4
+
+### Added
+NPC race spawning: Configurable Human, Elf, or Random natural spawns, plus biome-specific spawn commands.
+
+### Fixed
+Guard behavior: Stationary guards periodically face random directions without leaving their posts.
+Food consumption: Hungry patrolling NPCs seek dropped food, consume it, and resume patrolling.
+
 ## 0.4.3
 
 ### Added

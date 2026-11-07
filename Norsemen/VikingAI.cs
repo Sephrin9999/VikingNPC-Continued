@@ -209,7 +209,8 @@ public class VikingAI : MonsterAI
 
         return false;
     }
-
+    private float m_guardFacingTimer = 0f;
+    private Vector3 m_guardFacingDirection = Vector3.forward;
     private static readonly System.Reflection.FieldInfo RandomMoveTimerField =
     typeof(BaseAI).GetField(
         "m_randomMoveUpdateTimer",
@@ -1085,14 +1086,18 @@ public class VikingAI : MonsterAI
 
     public bool UpdateConsumeSearch(Viking viking, bool isTamed, float dt)
     {
-        m_vikingConsumeSearchTimer += dt;
-
-        if (m_vikingConsumeSearchTimer <= m_consumeSearchInterval)
+        // Only delay searching when we don't already have a food target.
+        if (m_vikingConsumeTarget == null)
         {
-            return false;
-        }
+            m_vikingConsumeSearchTimer += dt;
 
-        m_vikingConsumeSearchTimer = 0f;
+            if (m_vikingConsumeSearchTimer <= m_consumeSearchInterval)
+            {
+                return false;
+            }
+
+            m_vikingConsumeSearchTimer = 0f;
+        }
 
         if (!viking.IsHungry())
         {
@@ -1109,19 +1114,24 @@ public class VikingAI : MonsterAI
             return false;
         }
 
-        m_vikingConsumeTarget =
-            FindClosestConsumableItem(m_consumeSearchRange);
+        if (m_vikingConsumeTarget == null)
+        {
+            m_vikingConsumeTarget =
+                FindClosestConsumableItem(m_consumeSearchRange);
+        }
 
         if (m_vikingConsumeTarget == null)
         {
             return false;
         }
 
-        if (!MoveTo(
+        bool reachedFood = MoveTo(
             dt,
             m_vikingConsumeTarget.transform.position,
             m_consumeRange,
-            false))
+            false);
+
+        if (!reachedFood)
         {
             return true;
         }
@@ -1129,17 +1139,30 @@ public class VikingAI : MonsterAI
         LookAt(m_vikingConsumeTarget.transform.position);
 
         if (Vector3.Distance(
-                transform.position,
-                m_vikingConsumeTarget.transform.position) <= m_consumeRange)
+            transform.position,
+            m_vikingConsumeTarget.transform.position) <= m_consumeRange + 1f)
         {
-            Inventory inventory = viking.GetInventory();
+            ItemDrop food = m_vikingConsumeTarget;
 
-            viking.ConsumeItem(
-                inventory,
-                m_vikingConsumeTarget.m_itemData,
-                true);
+            // Feed the NPC directly from the ground item.
+            bool consumed = viking.OnConsumedItem(food.m_itemData);
 
-            m_vikingConsumeTarget = null;
+            if (consumed)
+            {
+                // Remove one food item from the ground.
+                if (food.m_itemData.m_stack > 1)
+                {
+                    food.m_itemData.m_stack--;
+                    food.GetComponent<ZNetView>().GetZDO()
+                        .Set(ZDOVars.s_stack, food.m_itemData.m_stack);
+                }
+                else
+                {
+                    ZNetScene.instance.Destroy(food.gameObject);
+                }
+
+                m_vikingConsumeTarget = null;
+            }
         }
 
         return true;
@@ -2765,6 +2788,29 @@ public class VikingAI : MonsterAI
         else
         {
             StopMoving();
+
+            // Stationary guards periodically turn to face a random direction.
+            if (flag &&
+                m_moveType == Movement.Guard &&
+                !flag2 &&
+                !flag3 &&
+                !IsAlerted())
+            {
+                m_guardFacingTimer -= dt;
+
+                if (m_guardFacingTimer <= 0f)
+                {
+                    float angle = UnityEngine.Random.Range(0f, 360f);
+
+                    m_guardFacingDirection =
+                        Quaternion.Euler(0f, angle, 0f) * Vector3.forward;
+
+                    m_guardFacingTimer = UnityEngine.Random.Range(5f, 15f);
+                }
+
+                // Continue turning toward the selected direction each AI update.
+                LookAt(transform.position + m_guardFacingDirection);
+            }
         }
 
         if (!flag5 || !flag3)

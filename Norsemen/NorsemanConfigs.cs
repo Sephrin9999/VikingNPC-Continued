@@ -4,6 +4,13 @@ using BepInEx.Configuration;
 
 namespace Norsemen;
 
+public enum NorsemanRace
+{
+    Random,
+    Human,
+    Elf
+}
+
 public class NorsemanConfigs
 {
 	private static readonly Dictionary<string, NorsemanConfigs> configs = new Dictionary<string, NorsemanConfigs>();
@@ -12,7 +19,9 @@ public class NorsemanConfigs
 
 	private ConfigEntry<float> baseHealth;
 
-	private ConfigEntry<Toggle> canMine;
+    private ConfigEntry<NorsemanRace> spawnRace;
+
+    private ConfigEntry<Toggle> canMine;
 
 	private ConfigEntry<Toggle> canLumber;
 
@@ -51,9 +60,16 @@ public class NorsemanConfigs
 
 	public void Setup(Norseman norseman)
 	{
-		//IL_002c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0037: Expected O, but got Unknown
-		baseHealth = ConfigManager.config(norseman.name, "Base Health", norseman.baseHealth, new ConfigDescription("Set base health", (AcceptableValueBase)(object)new AcceptableValueRange<float>(1f, 1000f), Array.Empty<object>()));
+        //IL_002c: Unknown result type (might be due to invalid IL or missing references)
+        //IL_0037: Expected O, but got Unknown
+        spawnRace = ConfigManager.config(
+			norseman.name,
+			"Spawn Race",
+			NorsemanRace.Random,
+			"Determines the race of newly spawned Norsemen. Random allows both Humans and Elves. Human or Elf restricts spawning to that race."
+		);
+
+        baseHealth = ConfigManager.config(norseman.name, "Base Health", norseman.baseHealth, new ConfigDescription("Set base health", (AcceptableValueBase)(object)new AcceptableValueRange<float>(1f, 1000f), Array.Empty<object>()));
 		((Character)norseman.m_viking).m_health = baseHealth.Value;
 		canMine = ConfigManager.config(norseman.name, "Can Mine", Toggle.On, "If on, will mine ores if has pickaxe");
 		canLumber = ConfigManager.config(norseman.name, "Can Lumber", Toggle.On, "If on, will lumber if has axe");
@@ -176,4 +192,16 @@ public class NorsemanConfigs
 		NorsemanConfigs config;
 		return TryGetConfig(prefabName, out config) && config.tameable.Value == Toggle.On;
 	}
+
+    public static NorsemanRace GetSpawnRace(string prefabName)
+    {
+        NorsemanConfigs config;
+
+        if (TryGetConfig(prefabName, out config) && config.spawnRace != null)
+        {
+            return config.spawnRace.Value;
+        }
+
+        return NorsemanRace.Random;
+    }
 }
